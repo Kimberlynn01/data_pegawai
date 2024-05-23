@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PegawaiController;
@@ -56,6 +57,9 @@ Route::middleware(['auth'])->group(function() {
         Route::delete('/delete',[PegawaiController::class, 'delete'])->name('delete');
         Route::get('/api', [PegawaiController::class, 'api'])->name('api');
     });
+
+
+    Route::get('/api', [ApiController::class, 'index']);
 
 
 });
