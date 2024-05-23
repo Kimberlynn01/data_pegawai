@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('data_pegawai', function (Blueprint $table) {
             $table->id();
+            $table->string('nama');
+            $table->string('nomorhp');
+            $table->string('alamat');
+            $table->string('jenis_kelamin');
+            $table->date('tanggal_lahir');
+            $table->string('jabatan');
+            $table->string('gaji');
+            $table->string('status');
+            $table->foreignId('userId')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }
