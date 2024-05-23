@@ -34,10 +34,10 @@ Route::middleware(['guest'])->group(function() {
     });
 
     // Register Route
-    // Route::prefix('/register')->name('register.')->group(function() {
-    //     Route::get('/', [RegisterController::class, 'index'])->name('index');
-    //     Route::post('/', [RegisterController::class, 'store'])->name('store');
-    // });
+    Route::prefix('/register')->name('register.')->group(function() {
+        Route::get('/', [RegisterController::class, 'index'])->name('index');
+        Route::post('/tambah', [RegisterController::class, 'store'])->name('store');
+    });
 });
 
 Route::middleware(['auth'])->group(function() {
@@ -46,6 +46,7 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/',[DashboardController::class, 'index'])->name('index');
     });
 
+    Route::get('/logout',[AuthController::class, 'logout'])->name('logout');
     Route::put('/profile/update', [AuthController::class, 'update'])->name('upload.picture');
 
     Route::prefix('/pegawai')->name('pegawai.')->group(function() {

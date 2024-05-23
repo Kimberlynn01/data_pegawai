@@ -73,4 +73,11 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not authenticated'], 401);
         }
     }
+
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/login');
+    }
 }

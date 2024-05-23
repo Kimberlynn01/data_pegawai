@@ -14,6 +14,8 @@
     {{-- <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css" rel="stylesheet">
+
     @stack('style')
 </head>
 
@@ -111,9 +113,16 @@
                             <li class="nav-item {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ route('dashboard.index') }}">Dashboard</a>
                             </li>
-                            <li class="nav-item {{ request()->routeIs('pegawai.index') ? 'active' : '' }}">
+                            <li class="nav-item {{ request()->routeIs('pegawai.index') ? 'active' : '' }}  ">
                                 <a class="nav-link" href="{{ route('pegawai.index') }}">Pegawai</a>
                             </li>
+                            <li class="nav-item ms-2">
+                                <a id="logoutBtn" class="nav-link " href="{{ route('logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -133,7 +142,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.2.8/js/fileinput.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.2.8/themes/fas/theme.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.all.min.js"></script>
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/popper.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
@@ -173,6 +182,28 @@
             });
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            $('a#logoutBtn').click(function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Logout',
+                    text: "Apakah Anda yakin ingin logout?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f8b739',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Logout!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = $(this).attr('href');
+                    }
+                });
+            });
+        });
+    </script>
+
 
     @stack('script')
 
