@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,5 +42,9 @@ Route::middleware(['auth'])->group(function() {
 
     Route::prefix('/dashboard')->name('dashboard.')->group(function() {
         Route::get('/',[DashboardController::class, 'index'])->name('index');
+    });
+
+    Route::prefix('/pegawai')->name('pegawai.')->group(function() {
+        Route::get('/',[PegawaiController::class, 'index'])->name('index');
     });
 });
