@@ -1,5 +1,8 @@
 @extends('Auth.layouts.main')
 
+@section('title', 'Login')
+
+
 @push('style')
     <style>
         .login-container {
@@ -37,7 +40,7 @@
         <form action="{{ route('login.store') }}" method="POST">
             @csrf
             @method('POST')
-            
+
             <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="email" placeholder="Enter your email">
