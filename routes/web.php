@@ -31,10 +31,10 @@ Route::middleware(['guest'])->group(function() {
     });
 
     // Register Route
-    Route::prefix('/register')->name('register.')->group(function() {
-        Route::get('/', [RegisterController::class, 'index'])->name('index');
-        Route::post('/', [RegisterController::class, 'store'])->name('store');
-    });
+    // Route::prefix('/register')->name('register.')->group(function() {
+    //     Route::get('/', [RegisterController::class, 'index'])->name('index');
+    //     Route::post('/', [RegisterController::class, 'store'])->name('store');
+    // });
 });
 
 Route::middleware(['auth'])->group(function() {

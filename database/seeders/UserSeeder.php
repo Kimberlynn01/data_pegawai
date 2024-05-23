@@ -19,16 +19,16 @@ class UserSeeder extends Seeder
         $posts = [
             [
                 'name' => 'Admin',
-                'email' => 'Admin@gmail.com',
+                'email' => 'admin@gmail.com',
                 'role' => '0',
                 'password' => Hash::make('admin123'),
             ],
-            [
-                'name' => 'Danu',
-                'email' => 'danu@gmail.com',
-                'role' => '1',
-                'password' => Hash::make('danu123'),
-            ],
+            // [
+            //     'name' => 'Danu',
+            //     'email' => 'danu@gmail.com',
+            //     'role' => '1',
+            //     'password' => Hash::make('danu123'),
+            // ],
         ];
 
         DB::table('users')->insert($posts);

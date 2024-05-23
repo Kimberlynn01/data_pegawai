@@ -16,8 +16,8 @@ class AuthController extends Controller
     {
         // Validasi input
         $credentials = $request->validate([
-            'name' => 'required|string',
-            'password' => 'required|string',
+            'email' => 'required',
+            'password' => 'required',
         ]);
 
         // Attempt login
@@ -28,7 +28,7 @@ class AuthController extends Controller
 
         // Jika otentikasi gagal
         return back()->withErrors([
-            'name' => 'Nama pengguna atau kata sandi salah.',
+            'email' => 'Email atau kata sandi salah.',
         ])->withInput($request->except('password'));
     }
 
