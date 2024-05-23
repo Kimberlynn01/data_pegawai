@@ -82,7 +82,7 @@
                             <div class="form-group">
                                 <label for="foto" class="form-label">Foto Pegawai</label>
                                 <input type="file" name="foto" id="foto{{ $pegawai->id }}" class="file-input"
-                                    data-show-upload="false" data-show-caption="true" accept="image/*" required>
+                                    data-show-upload="false" data-show-caption="true" accept="image/*">
 
                             </div>
                         </div>
