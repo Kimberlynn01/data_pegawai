@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,16 +23,23 @@ Route::get('/', function () {
 
 
 Route::middleware(['guest'])->group(function() {
+
+    // Login Route
     Route::prefix('/login')->name('login.')->group(function() {
         Route::get('/', [AuthController::class, 'index'])->name('index');
+        Route::post('/auth', [AuthController::class, 'postlogin'])->name('store');
     });
 
-
+    // Register Route
     Route::prefix('/register')->name('register.')->group(function() {
-        Route::get('/', [AuthController::class, 'index'])->name('index');
+        Route::get('/', [RegisterController::class, 'index'])->name('index');
+        Route::post('/', [RegisterController::class, 'store'])->name('store');
     });
 });
 
 Route::middleware(['auth'])->group(function() {
-    Route::get('/dashboard');
+
+    Route::prefix('/dashboard')->name('dashboard.')->group(function() {
+        Route::get('/',[DashboardController::class, 'index'])->name('index');
+    });
 });
