@@ -4,8 +4,8 @@
             <form action="{{ route('pegawai.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="statusId" value="1">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="tambahdataModalLabel">Tambah Data Pegawai</h5>
+                <div class="modal-header" style="background-color: #f8b739">
+                    <h5 class="modal-title text-white" id="tambahdataModalLabel">Tambah Data Pegawai</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

@@ -1,5 +1,7 @@
 @extends('Dashboard.layouts.main')
-@include('Dashboard.pegawai.modalTambah')
+
+@include('Dashboard.pegawai.modal.modalTambah')
+
 
 @section('title', 'Pegawai')
 
@@ -28,6 +30,10 @@
             .btn-show-modal {
                 display: none !important;
             }
+        }
+
+        .border-dotted {
+            border: 2px gray dotted;
         }
     </style>
 @endpush
@@ -66,6 +72,13 @@
                         <td>{{ $pegawai->gaji }}</td>
                         <td>{{ $pegawai->status->nama_status }}</td>
                         <td>
+
+                            <button class="btn btn-info btn-show-modal d-none d-sm-inline-block" data-toggle="modal"
+                                data-target="#editPegawai{{ $pegawai->id }}">
+                                <i class="fas fa-pencil-alt fa-sm"></i>
+                            </button>
+                            @include('Dashboard.pegawai.modal.modalEdit')
+
                             <button class="btn btn-info btn-show-modal d-none d-sm-inline-block" data-toggle="modal"
                                 data-target="#detailPegawai{{ $pegawai->id }}">
                                 <i class="fas fa-exclamation"></i>

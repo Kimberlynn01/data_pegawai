@@ -26,7 +26,8 @@
                     <a href="#" class="img logo rounded-circle mb-5"
                         style="background-image: url({{ 'storage/' . Auth::user()->picture }});"></a>
                 @else
-                    <a href="#" id="addPictureBtn" class="img logo rounded-circle mb-5"
+                    <a href="#" id="addPictureBtn" class="img logo rounded-circle mb-5" data-toggle="modal"
+                        data-target="#selectPictureModal"
                         style="display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
                         <i class="fa fa-plus" style="font-size: 24px; color: #6c757d;"></i>
                     </a>
@@ -35,7 +36,10 @@
                     <li class="{{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                         <a href="{{ route('dashboard.index') }}">Dashboard</a>
                     </li>
-                    <li class="{{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
+                    <li class="{{ request()->routeIs('pegawai.index') ? 'active' : '' }}">
+                        <a href="{{ route('pegawai.index') }}">Data Pegawai</a>
+                    </li>
+                    {{-- <li class="{{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
                         <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
                             class="dropdown-toggle">Pegawai</a>
                         <ul class="collapse list-unstyled" id="pageSubmenu">
@@ -46,7 +50,7 @@
                                 <a href="#">Tambah Pegawai</a>
                             </li>
                         </ul>
-                    </li>
+                    </li> --}}
                 </ul>
 
                 <div class="footer">
@@ -66,28 +70,31 @@
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="selectPictureModalLabel">Select Profile Picture</h5>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close"><i
-                                class="fas fa-times"></i></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="selectPictureForm" class="dropzone" enctype="multipart/form-data">
+                    <form action="{{ route('upload.picture') }}" enctype="multipart/form-data" id="dropzoneForm"
+                        class="dropzone" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="selectPictureModalLabel">Pilih Gambar Profil</h5>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close"><i
+                                    class="fas fa-times"></i></button>
+                        </div>
+                        <div class="modal-body">
                             <input type="hidden" id="userIdInput" name="userId" value="{{ Auth::id() }}">
                             <div class="fallback">
                                 <input name="picture" type="file" accept="image/*" required>
                             </div>
-                        </form>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="savePictureBtn">Save</button>
-
+                        </div>
+                    </form>
+                    <div class="modal-footer"> <!-- Tombol-tombol tutup/simpan berada di dalam modal-body -->
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <!-- Page Content  -->
         <div id="content" class="p-4 p-md-5">
@@ -123,70 +130,47 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.js"></script>
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.2.8/js/fileinput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.2.8/themes/fas/theme.min.js"></script>
+
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/popper.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-
     <script>
-        // Inisialisasi Dropzone dengan method PUT
         Dropzone.autoDiscover = false;
-        var myDropzone = new Dropzone("#selectPictureForm", {
-            url: "/profile/picture/update",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            paramName: "picture", // Ubah menjadi "picture" sesuai dengan nama field pada formulir
-            maxFiles: 1,
-            acceptedFiles: "image/*",
-            addRemoveLinks: true,
-            dictRemoveFile: "Remove",
-            resizeWidth: null, // Set null untuk mempertahankan ukuran asli
-            resizeHeight: null, // Set null untuk mempertahankan ukuran asli
-            method: "put", // Mengatur metode PUT untuk pengiriman file
-            init: function() {
-                this.on("success", function(file, response) {
-                    // Handle success response
-                    console.log("Profile picture saved successfully:", response);
-                    $('#selectPictureModal').modal('hide');
-                });
-                this.on("error", function(file, errorMessage) {
-                    // Handle error response
-                    console.error("Error saving profile picture:", errorMessage);
-                });
-                this.on("addedfile", function(file) {
-                    // Check if there is already a file, remove it before adding the new file
-                    if (this.files.length > 1) {
-                        this.removeFile(this.files[0]); // Remove the first file in the queue
-                    }
-                });
-            }
-        });
 
-        // Function to show modal for selecting picture
-        document.getElementById('addPictureBtn').addEventListener('click', function() {
-            $('#selectPictureModal').modal('show');
-        });
+        $(document).ready(function() {
+            var myDropzone = new Dropzone("#dropzoneForm", {
+                url: "{{ route('upload.picture') }}",
+                paramName: 'picture',
+                maxFiles: 1,
+                maxFilesize: 2,
+                acceptedFiles: 'image/*',
+                addRemoveLinks: true,
+                dictDefaultMessage: 'Drop gambar di sini atau klik untuk memilih gambar',
+                dictRemoveFile: 'Hapus',
+                dictCancelUpload: 'Batal',
+                init: function() {
+                    this.on("addedfile", function(file) {
+                        console.log('File ditambahkan:', file);
+                    });
 
-        // Manually handle form submission on Save button click
-        document.getElementById('savePictureBtn').addEventListener('click', function() {
-            // Check if a file has been added to Dropzone
-            if (myDropzone.files.length > 0) {
-                // Process the file queue
-                myDropzone.processQueue();
-            } else {
-                alert("Please select a picture first."); // Show an alert if no picture is selected
-            }
-        });
+                    this.on("success", function(file, response) {
+                        console.log('Upload berhasil:', file, response);
+                        location.reload();
+                    });
 
-        // Event listener when the Dropzone form is completed (files uploaded or removed)
-        myDropzone.on("complete", function(file) {
-            // Check if all files have been uploaded
-            if (myDropzone.getQueuedFiles().length === 0 && myDropzone.getUploadingFiles().length === 0) {
-                // Reset the form and close the modal
-                $('#selectPictureForm')[0].reset();
-                $('#selectPictureModal').modal('hide');
-            }
+                    this.on("removedfile", function(file) {
+                        console.log('File dihapus:', file);
+                    });
+
+                    this.on("error", function(file, errorMessage) {
+                        console.log('Error:', file, errorMessage);
+                    });
+                }
+            });
         });
     </script>
 

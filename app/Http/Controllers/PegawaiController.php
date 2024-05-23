@@ -56,6 +56,45 @@ class PegawaiController extends Controller
     }
 
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'nomorhp' => 'required',
+            'alamat' => 'required',
+            'jenis_kelamin' => 'required',
+            'tanggal_lahir' => 'required|date',
+            'gaji' => 'required',
+            'foto' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'jabatanId' => 'required|exists:jabatan_pegawai,id',
+            'statusId' => 'required|exists:status,id',
+        ]);
+
+        $pegawai = Pegawai::findOrFail($id);
+        $pegawai->nama = $request->nama;
+        $pegawai->nomorhp = $request->nomorhp;
+        $pegawai->alamat = $request->alamat;
+        $pegawai->jenis_kelamin = $request->jenis_kelamin;
+        $pegawai->tanggal_lahir = $request->tanggal_lahir;
+        $pegawai->gaji = $request->gaji;
+        $pegawai->jabatanId = $request->jabatanId;
+        $pegawai->statusId = $request->statusId;
+
+        if ($request->hasFile('foto')) {
+            if ($pegawai->foto) {
+                Storage::delete('public/foto/' . $pegawai->foto);
+            }
+
+            $file = $request->file('foto');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/foto', $fileName);
+            $pegawai->foto = $fileName;
+        }
+
+        $pegawai->save();
+
+        return redirect()->back()->with('success', 'Data Pegawai berhasil diperbarui.');
+    }
 
 
     public function delete(Request $request)
@@ -73,4 +112,6 @@ class PegawaiController extends Controller
             return response()->json(['error' => 'Data Pegawai tidak ditemukan.'], 404);
         }
     }
+
+
 }

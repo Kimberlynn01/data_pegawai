@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
 class AuthController extends Controller
 {
     public function index()
@@ -34,43 +36,41 @@ class AuthController extends Controller
 
 
     public function update(Request $request)
-{
-    // Validate the request
-    $request->validate([
-        'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
-    ]);
+    {
+        $request->validate([
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    // Check if the user is authenticated
-    if (Auth::check()) {
-        // Get the authenticated user ID
-        $userId = Auth::id();
+        if (Auth::check()) {
+            $userId = Auth::id();
 
-        // Check if a picture file was uploaded
-        if ($request->hasFile('picture')) {
-            try {
-                // Get the uploaded file
-                $file = $request->file('picture');
+            if ($request->hasFile('picture')) {
+                try {
+                    $file = $request->file('picture');
+                    $fileName = time() . '.' . $file->getClientOriginalExtension();
+                    $path = $file->storeAs('public/picture', $fileName);
 
-                // Generate a unique file name
-                $fileName = time() . '.' . $file->getClientOriginalExtension();
+                    $user = User::find($userId);
+                    if ($user) {
+                        if ($user->picture) {
+                            Storage::delete($user->picture);
+                        }
 
-                // Store the file in the storage/picture folder
-                $path = $file->storeAs('picture', $fileName);
+                        $user->picture = 'picture/' . $fileName;
+                        $user->save();
 
-                // Update the user's profile picture path in the database using the User model
-                \App\Models\User::where('id', $userId)->update(['picture' => $path]);
-
-                return response()->json(['message' => 'Profile picture updated successfully', 'path' => $path]);
-            } catch (\Exception $e) {
-                return response()->json(['message' => 'Error updating profile picture'], 500);
+                        return response()->json(['message' => 'Profile picture updated successfully', 'path' => $path]);
+                    } else {
+                        return response()->json(['message' => 'User not found'], 404);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Error updating profile picture'], 500);
+                }
+            } else {
+                return response()->json(['message' => 'No picture uploaded'], 400);
             }
         } else {
-            return response()->json(['message' => 'No picture uploaded'], 400);
+            return response()->json(['message' => 'User not authenticated'], 401);
         }
-    } else {
-        return response()->json(['message' => 'User not authenticated'], 401);
     }
-}
-
-
 }
