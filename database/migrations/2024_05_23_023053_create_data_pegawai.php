@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('nomorhp');
-            $table->string('alamat');
+            $table->text('alamat');
             $table->string('jenis_kelamin');
             $table->date('tanggal_lahir');
-            $table->string('jabatan');
             $table->string('gaji');
-            $table->string('status');
+            $table->string('foto')->nullable();
+            $table->foreignId('jabatanId')->constrained('jabatan_pegawai')->cascadeOnDelete();
+            $table->foreignId('statusId')->constrained('status')->cascadeOnDelete();
             $table->foreignId('userId')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

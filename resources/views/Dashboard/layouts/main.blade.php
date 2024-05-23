@@ -5,14 +5,16 @@
     <title>@yield('title', config('app.name'))</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css"> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.css" rel="stylesheet">
-
+    @stack('style')
 </head>
 
 <body>
@@ -33,8 +35,17 @@
                     <li class="{{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                         <a href="{{ route('dashboard.index') }}">Dashboard</a>
                     </li>
-                    <li class="{{ request()->routeIs('pegawai.index') ? 'active' : '' }}">
-                        <a href="{{ route('pegawai.index') }}">Data Pegawai</a>
+                    <li class="{{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
+                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                            class="dropdown-toggle">Pegawai</a>
+                        <ul class="collapse list-unstyled" id="pageSubmenu">
+                            <li class="{{ request()->routeIs('pegawai.index') ? 'active' : '' }}">
+                                <a href="{{ route('pegawai.index') }}">Pegawai</a>
+                            </li>
+                            <li>
+                                <a href="#">Tambah Pegawai</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
 
@@ -49,26 +60,30 @@
                 </div>
             </div>
         </nav>
-        <!-- Modal for selecting profile picture -->
+
+
         <div class="modal fade" id="selectPictureModal" tabindex="-1" aria-labelledby="selectPictureModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="selectPictureModalLabel">Select Profile Picture</h5>
-                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close"><i
+                                class="fas fa-times"></i></button>
                     </div>
                     <div class="modal-body">
-                        <form id="selectPictureForm" class="dropzone">
+                        <form id="selectPictureForm" class="dropzone" enctype="multipart/form-data">
                             <input type="hidden" id="userIdInput" name="userId" value="{{ Auth::id() }}">
                             <div class="fallback">
-                                <input name="file" type="file" accept="image/*" required>
+                                <input name="picture" type="file" accept="image/*" required>
                             </div>
                         </form>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id="savePictureBtn">Save</button>
+
                     </div>
                 </div>
             </div>
@@ -104,22 +119,31 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.min.js"></script>
-    <script src="{{ asset('assets/js/main.js') }}"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.js"></script>
 
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/popper.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/main.js') }}"></script>
 
     <script>
-        // Inisialisasi Dropzone
+        // Inisialisasi Dropzone dengan method PUT
         Dropzone.autoDiscover = false;
         var myDropzone = new Dropzone("#selectPictureForm", {
-            url: "/save-profile-picture", // Ganti dengan URL endpoint penyimpanan gambar di backend Anda
-            paramName: "file", // Nama parameter untuk gambar yang diupload
-            maxFiles: 1, // Batas maksimal jumlah file yang dapat diupload
-            acceptedFiles: "image/*", // Jenis file yang diterima (hanya gambar)
-            addRemoveLinks: true, // Menambahkan tautan untuk menghapus gambar
-            dictRemoveFile: "Remove", // Teks untuk tautan hapus gambar
+            url: "/profile/picture/update",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            paramName: "picture", // Ubah menjadi "picture" sesuai dengan nama field pada formulir
+            maxFiles: 1,
+            acceptedFiles: "image/*",
+            addRemoveLinks: true,
+            dictRemoveFile: "Remove",
+            resizeWidth: null, // Set null untuk mempertahankan ukuran asli
+            resizeHeight: null, // Set null untuk mempertahankan ukuran asli
+            method: "put", // Mengatur metode PUT untuk pengiriman file
             init: function() {
                 this.on("success", function(file, response) {
                     // Handle success response
@@ -130,6 +154,12 @@
                     // Handle error response
                     console.error("Error saving profile picture:", errorMessage);
                 });
+                this.on("addedfile", function(file) {
+                    // Check if there is already a file, remove it before adding the new file
+                    if (this.files.length > 1) {
+                        this.removeFile(this.files[0]); // Remove the first file in the queue
+                    }
+                });
             }
         });
 
@@ -137,7 +167,32 @@
         document.getElementById('addPictureBtn').addEventListener('click', function() {
             $('#selectPictureModal').modal('show');
         });
+
+        // Manually handle form submission on Save button click
+        document.getElementById('savePictureBtn').addEventListener('click', function() {
+            // Check if a file has been added to Dropzone
+            if (myDropzone.files.length > 0) {
+                // Process the file queue
+                myDropzone.processQueue();
+            } else {
+                alert("Please select a picture first."); // Show an alert if no picture is selected
+            }
+        });
+
+        // Event listener when the Dropzone form is completed (files uploaded or removed)
+        myDropzone.on("complete", function(file) {
+            // Check if all files have been uploaded
+            if (myDropzone.getQueuedFiles().length === 0 && myDropzone.getUploadingFiles().length === 0) {
+                // Reset the form and close the modal
+                $('#selectPictureForm')[0].reset();
+                $('#selectPictureModal').modal('hide');
+            }
+        });
     </script>
+
+    @stack('script')
+
+
 
 </body>
 

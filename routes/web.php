@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\RegisterController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,7 +45,10 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/',[DashboardController::class, 'index'])->name('index');
     });
 
+    Route::put('/profile/picture/update', [AuthController::class, 'update']);
+
     Route::prefix('/pegawai')->name('pegawai.')->group(function() {
         Route::get('/',[PegawaiController::class, 'index'])->name('index');
+        Route::post('/data',[PegawaiController::class, 'store'])->name('store');
     });
 });
