@@ -28,7 +28,7 @@
 
         @media (max-width: 1368px) {
             .btn-show-modal {
-                display: none !important;
+                display: inline-block !important;
             }
         }
 
@@ -50,12 +50,12 @@
             <thead>
                 <tr>
                     <th>Nama</th>
-                    <th>Nomor HP</th>
+                    {{-- <th>Nomor HP</th> --}}
                     <th>Alamat</th>
                     <th>Jenis Kelamin</th>
-                    <th>Tanggal Lahir</th>
+                    {{-- <th>Tanggal Lahir</th> --}}
                     <th>Jabatan</th>
-                    <th>Gaji</th>
+                    {{-- <th>Gaji</th> --}}
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -64,12 +64,12 @@
                 @foreach ($pegawais as $pegawai)
                     <tr>
                         <td>{{ $pegawai->nama }}</td>
-                        <td>{{ $pegawai->nomorhp }}</td>
+                        {{-- <td>{{ $pegawai->nomorhp }}</td> --}}
                         <td>{{ $pegawai->alamat }}</td>
                         <td>{{ $pegawai->jenis_kelamin }}</td>
-                        <td>{{ $pegawai->tanggal_lahir }}</td>
+                        {{-- <td>{{ $pegawai->tanggal_lahir }}</td> --}}
                         <td>{{ $pegawai->jabatan->nama_jabatan }}</td>
-                        <td>{{ $pegawai->gaji }}</td>
+                        {{-- <td>{{ $pegawai->gaji }}</td> --}}
                         <td>{{ $pegawai->status->nama_status }}</td>
                         <td>
 
@@ -150,7 +150,28 @@
     <script>
         $(document).ready(function() {
             $('#pegawaiTable').DataTable({
-                responsive: true
+                responsive: true,
+                columnDefs: [{
+                        responsivePriority: 1,
+                        targets: 0
+                    },
+                    {
+                        responsivePriority: 2,
+                        targets: -1
+                    }, // Mengatur prioritas responsif kolom terakhir
+                    {
+                        responsivePriority: 3,
+                        targets: -2
+                    },
+                    {
+                        responsivePriority: 4,
+                        targets: -3
+                    },
+                    {
+                        responsivePriority: 5,
+                        targets: -4
+                    },
+                ]
             });
 
             $("#foto").fileinput({
